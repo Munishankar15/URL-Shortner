@@ -307,3 +307,5 @@ In local development, the backend base path is `http://localhost:5001/api`.
 
 ### 3. Frontend (Vercel)
 1. Set NEXT_PUBLIC_API_URL pointing to the deployed backend url (`https://your-backend-url.com`).
+
+youtube video link: https://youtu.be/slvsCI39J4I
