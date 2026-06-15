@@ -97,26 +97,35 @@ export class UrlController {
   ) {
     const state = await this.urlService.getRedirectState(shortCode);
 
+    let targetFrontendUrl = this.frontendUrl;
+    if (referer) {
+      try {
+        targetFrontendUrl = new URL(referer).origin;
+      } catch {
+        // Fallback to default
+      }
+    }
+
     if (state.status === 'not_found') {
-      return res.redirect(302, `${this.frontendUrl}/error?type=not_found`);
+      return res.redirect(302, `${targetFrontendUrl}/error?type=not_found`);
     }
 
     if (state.status === 'expired') {
-      return res.redirect(302, `${this.frontendUrl}/error?type=expired`);
+      return res.redirect(302, `${targetFrontendUrl}/error?type=expired`);
     }
 
     if (state.status === 'limit_reached') {
-      return res.redirect(302, `${this.frontendUrl}/error?type=limit_reached`);
+      return res.redirect(302, `${targetFrontendUrl}/error?type=limit_reached`);
     }
 
     if (state.status === 'password_protected') {
-      return res.redirect(302, `${this.frontendUrl}/p/${shortCode}`);
+      return res.redirect(302, `${targetFrontendUrl}/p/${shortCode}`);
     }
 
     const { urlRecord } = state;
 
     if (!urlRecord) {
-      return res.redirect(302, `${this.frontendUrl}/error?type=not_found`);
+      return res.redirect(302, `${targetFrontendUrl}/error?type=not_found`);
     }
 
     // Custom OG Preview metadata rendering
