@@ -191,7 +191,14 @@ export default function Home() {
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <div className="w-full h-12 px-4 rounded-xl bg-purple-950/40 border border-purple-800/40 flex items-center justify-between text-sm font-semibold text-white overflow-x-auto select-all">
-                  <span>{shortenedResult}</span>
+                  <a 
+                    href={`https://${shortenedResult}`}
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
+                  >
+                    {shortenedResult}
+                  </a>
                 </div>
                 <div className="flex w-full sm:w-auto gap-3 shrink-0">
                   <button

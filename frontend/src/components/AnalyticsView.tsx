@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { urlService } from '../services/api';
+import { urlService, getShortUrl } from '../services/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -65,10 +65,9 @@ export function AnalyticsView({ urlId, onBack }: AnalyticsViewProps) {
     queryFn: () => urlService.getUrlAnalytics(urlId),
   });
 
-  // Generate QR code data URL whenever shortUrl or color changes
   useEffect(() => {
-    if (details?.url?.shortUrl) {
-      QRCode.toDataURL(details.url.shortUrl, {
+    if (details?.url?.shortCode) {
+      QRCode.toDataURL(getShortUrl(details.url.shortCode), {
         color: {
           dark: qrColor,
           light: '#00000000', // transparent background
@@ -81,7 +80,7 @@ export function AnalyticsView({ urlId, onBack }: AnalyticsViewProps) {
     } else {
       setQrCodeUrl('');
     }
-  }, [details?.url?.shortUrl, qrColor]);
+  }, [details?.url?.shortCode, qrColor]);
 
   if (isLoading) {
     return (
@@ -149,7 +148,7 @@ export function AnalyticsView({ urlId, onBack }: AnalyticsViewProps) {
         document.body.removeChild(link);
         toast.success('PNG QR Code downloaded!');
       } else {
-        const svgString = await QRCode.toString(url.shortUrl, {
+        const svgString = await QRCode.toString(getShortUrl(url.shortCode), {
           type: 'svg',
           color: {
             dark: qrColor,
@@ -173,8 +172,8 @@ export function AnalyticsView({ urlId, onBack }: AnalyticsViewProps) {
   };
 
   const handleCopy = () => {
-    if (!url?.shortUrl) return;
-    navigator.clipboard.writeText(url.shortUrl);
+    if (!url?.shortCode) return;
+    navigator.clipboard.writeText(getShortUrl(url.shortCode));
     setCopied(true);
     toast.success('Short link copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
@@ -234,7 +233,14 @@ export function AnalyticsView({ urlId, onBack }: AnalyticsViewProps) {
         </div>
         <div className="space-y-2">
           <h2 className="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-            <span className="truncate">{url.shortUrl}</span>
+            <a
+              href={getShortUrl(url.shortCode)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="truncate text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
+            >
+              {getShortUrl(url.shortCode)}
+            </a>
           </h2>
           <div className="text-sm font-bold text-slate-400 truncate flex flex-wrap items-center gap-1.5">
             <span className="text-slate-500 uppercase text-xs tracking-wider font-extrabold">Redirects to:</span>

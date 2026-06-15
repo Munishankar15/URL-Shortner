@@ -3,6 +3,11 @@ import { AuthResponse, Url, UrlAnalytics } from '../types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
+export const getShortUrl = (shortCode: string): string => {
+  const base = API_BASE_URL.replace(/\/api$/, '');
+  return `${base}/${shortCode}`;
+};
+
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {

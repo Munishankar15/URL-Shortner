@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { urlService, foldersService } from '../services/api';
+import { urlService, foldersService, getShortUrl } from '../services/api';
 import { toast } from 'sonner';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -121,7 +121,14 @@ export function CreateUrlForm() {
       toast.success(
         <div className="flex flex-col gap-1 text-left">
           <span className="font-bold text-green-400">Shortened successfully!</span>
-          <span className="text-xs text-slate-300 font-mono truncate">{newUrl.shortUrl}</span>
+          <a
+            href={getShortUrl(newUrl.shortCode)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-purple-400 hover:text-purple-300 transition-colors font-mono truncate cursor-pointer underline"
+          >
+            {getShortUrl(newUrl.shortCode)}
+          </a>
         </div>
       );
       // Reset form

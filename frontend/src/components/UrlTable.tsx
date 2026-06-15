@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { urlService, foldersService } from '../services/api';
+import { urlService, foldersService, getShortUrl } from '../services/api';
 import { Url } from '../types';
 import { toast } from 'sonner';
 import {
@@ -92,7 +92,7 @@ export function UrlTable({ onViewAnalytics }: UrlTableProps) {
   // Generate QR code data URL whenever target or color changes
   useEffect(() => {
     if (qrTarget) {
-      QRCode.toDataURL(qrTarget.shortUrl, {
+      QRCode.toDataURL(getShortUrl(qrTarget.shortCode), {
         color: {
           dark: qrColor,
           light: '#00000000', // transparent
@@ -122,7 +122,7 @@ export function UrlTable({ onViewAnalytics }: UrlTableProps) {
   });
 
   const handleCopy = (url: Url) => {
-    navigator.clipboard.writeText(url.shortUrl);
+    navigator.clipboard.writeText(getShortUrl(url.shortCode));
     setCopiedId(url.id);
     toast.success('Short link copied to clipboard!');
     setTimeout(() => setCopiedId(null), 2000);
@@ -151,7 +151,7 @@ export function UrlTable({ onViewAnalytics }: UrlTableProps) {
         toast.success('PNG QR Code downloaded!');
       } else {
         // Generate SVG string
-        const svgString = await QRCode.toString(qrTarget.shortUrl, {
+        const svgString = await QRCode.toString(getShortUrl(qrTarget.shortCode), {
           type: 'svg',
           color: {
             dark: qrColor,
@@ -355,9 +355,14 @@ export function UrlTable({ onViewAnalytics }: UrlTableProps) {
 
                     {/* Short URL */}
                     <TableCell className="py-4 font-mono text-sm">
-                      <span className="text-purple-400 font-bold bg-purple-950/40 px-2.5 py-1 rounded-lg border border-purple-900/30">
-                        {url.shortUrl}
-                      </span>
+                      <a
+                        href={getShortUrl(url.shortCode)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-400 hover:text-purple-300 transition-colors font-bold bg-purple-950/40 px-2.5 py-1 rounded-lg border border-purple-900/30 cursor-pointer"
+                      >
+                        {getShortUrl(url.shortCode)}
+                      </a>
                     </TableCell>
 
                     {/* Status Badge */}
@@ -410,15 +415,15 @@ export function UrlTable({ onViewAnalytics }: UrlTableProps) {
                         >
                           <QrCode className="h-4.5 w-4.5" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => window.open(url.shortUrl, '_blank')}
-                          className="h-8 w-8 text-slate-450 hover:text-white hover:bg-purple-950/20 rounded-lg cursor-pointer"
+                        <a
+                          href={getShortUrl(url.shortCode)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="h-8 w-8 inline-flex items-center justify-center text-slate-450 hover:text-white hover:bg-purple-950/20 rounded-lg cursor-pointer transition-colors"
                           title="Open Link"
                         >
                           <ExternalLink className="h-4 w-4" />
-                        </Button>
+                        </a>
                         <Button
                           variant="ghost"
                           size="icon"
