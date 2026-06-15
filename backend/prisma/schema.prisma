@@ -1,0 +1,88 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  urls         Url[]
+  folders      Folder[]
+  apiKeys      ApiKey[]
+
+  @@map("users")
+}
+
+model Url {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalUrl   String    @db.Text
+  shortCode     String    @unique
+  shortUrl      String
+  clickCount    Int       @default(0)
+  createdAt     DateTime  @default(now())
+  visits        Visit[]
+
+  // Feature 3: Expiration
+  expiresAt     DateTime?
+
+  // Feature 4: Password Protection
+  passwordHash  String?
+
+  // Feature 5: Click limits
+  maxClicks     Int?
+
+  // Feature 6: OG Customization
+  ogTitle       String?
+  ogDescription String?
+  ogImage       String?
+
+  // Feature 10: Tags & Folders
+  folderId      String?
+  folder        Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  tags          String[]
+
+  @@map("urls")
+}
+
+model Folder {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+  urls      Url[]
+
+  @@map("folders")
+}
+
+model ApiKey {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  keyHash   String   @unique
+  name      String
+  createdAt DateTime @default(now())
+
+  @@map("api_keys")
+}
+
+model Visit {
+  id        String   @id @default(uuid())
+  urlId     String
+  url       Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  visitedAt DateTime @default(now())
+  browser   String?
+  device    String?
+  referrer  String?
+
+  @@map("visits")
+}

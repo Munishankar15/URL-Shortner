@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply text-zinc-900 bg-white;
+  }
+}
